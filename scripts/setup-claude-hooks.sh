@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SETTINGS_FILE="$HOME/.claude/settings.local.json"
+SETTINGS_FILE="$HOME/.claude/settings.json"
 
 mkdir -p "$HOME/.claude"
 
