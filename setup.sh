@@ -118,28 +118,6 @@ else
     echo "Ranger alias already exists in .zshrc"
 fi
 
-# Setup utils directory and scripts
-echo "Setting up utils directory..."
-mkdir -p "$HOME/utils"
-
-# Copy pr_comments to ~/utils
-cp "$SCRIPT_DIR/utils/pr_comments" "$HOME/utils/"
-chmod +x "$HOME/utils/pr_comments"
-echo "Copied pr_comments to ~/utils/"
-
-# Add ~/utils to PATH in .zshrc
-echo "Adding ~/utils to PATH..."
-PATH_LINE='export PATH="$HOME/utils:$PATH"'
-
-if ! grep -q 'export PATH="$HOME/utils:$PATH"' "$HOME/.zshrc"; then
-    echo "" >> "$HOME/.zshrc"
-    echo "# Add utils directory to PATH" >> "$HOME/.zshrc"
-    echo "$PATH_LINE" >> "$HOME/.zshrc"
-    echo "Added ~/utils to PATH in .zshrc"
-else
-    echo "~/utils already in PATH"
-fi
-
 # Setup Claude Code hooks
 echo "Setting up Claude Code hooks..."
 "$SCRIPT_DIR/scripts/setup-claude-hooks.sh"
@@ -150,5 +128,5 @@ echo ""
 echo "To start using your new setup:"
 echo "1. Log out and log back in (or run: exec zsh)"
 echo "2. Run 'r' to launch ranger"
-echo "3. Run 'pr_comments' from anywhere to view PR comments"
+echo "3. Claude Code hooks are configured"
 echo ""
