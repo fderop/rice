@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Get the directory where this script is located (save early before any cd commands)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 echo "=== Starting terminal setup ==="
 
 # Detect OS for package manager
@@ -12,18 +15,33 @@ else
     exit 1
 fi
 
-# Install dependencies based on OS
-echo "Installing dependencies..."
-if [[ "$OS" == "ubuntu" ]] || [[ "$OS" == "debian" ]]; then
-    sudo apt-get update
-    sudo apt-get install -y git curl zsh python3 python3-venv
-elif [[ "$OS" == "fedora" ]] || [[ "$OS" == "rhel" ]] || [[ "$OS" == "centos" ]]; then
-    sudo dnf install -y git curl zsh python3
-elif [[ "$OS" == "arch" ]] || [[ "$OS" == "manjaro" ]]; then
-    sudo pacman -S --noconfirm git curl zsh python
+# Check if user has sudo access
+echo "Checking for sudo access..."
+if sudo -n true 2>/dev/null; then
+    echo "Sudo access detected. Installing dependencies..."
+    set +e  # Temporarily disable exit on error
+    if [[ "$OS" == "ubuntu" ]] || [[ "$OS" == "debian" ]]; then
+        sudo apt-get update && sudo apt-get install -y git curl zsh python3 python3-venv
+        if [ $? -ne 0 ]; then
+            echo "Package installation failed. Skipping..."
+        fi
+    elif [[ "$OS" == "fedora" ]] || [[ "$OS" == "rhel" ]] || [[ "$OS" == "centos" ]]; then
+        sudo dnf install -y git curl zsh python3
+        if [ $? -ne 0 ]; then
+            echo "Package installation failed. Skipping..."
+        fi
+    elif [[ "$OS" == "arch" ]] || [[ "$OS" == "manjaro" ]]; then
+        sudo pacman -S --noconfirm git curl zsh python
+        if [ $? -ne 0 ]; then
+            echo "Package installation failed. Skipping..."
+        fi
+    else
+        echo "Unsupported OS. Please install git, curl, zsh, and python3 manually if needed."
+    fi
+    set -e  # Re-enable exit on error
 else
-    echo "Unsupported OS. Please install git, curl, zsh, and python3 manually."
-    exit 1
+    echo "No sudo access detected. Skipping package installation."
+    echo "Please ensure git, curl, zsh, and python3 are installed."
 fi
 
 # Install Oh My Zsh
@@ -41,13 +59,19 @@ if [ "$SHELL" != "$(which zsh)" ]; then
     echo "Default shell changed to zsh. You'll need to log out and back in for this to take effect."
 fi
 
-# Configure git
+# Configure git (skip if already configured)
 echo "Configuring git..."
-read -p "Enter your git username: " git_username
-read -p "Enter your git email: " git_email
-git config --global user.name "$git_username"
-git config --global user.email "$git_email"
-echo "Git configured with user: $git_username <$git_email>"
+existing_name=$(git config --global user.name || true)
+existing_email=$(git config --global user.email || true)
+if [ -n "$existing_name" ] && [ -n "$existing_email" ]; then
+    echo "Git already configured: $existing_name <$existing_email>"
+else
+    read -p "Enter your git username: " git_username
+    read -p "Enter your git email: " git_email
+    git config --global user.name "$git_username"
+    git config --global user.email "$git_email"
+    echo "Git configured with user: $git_username <$git_email>"
+fi
 
 # Install Ranger
 echo "Installing Ranger..."
@@ -69,6 +93,11 @@ mkdir -p "$HOME/.config/ranger"
 
 # Add alias to .zshrc
 echo "Adding ranger alias to .zshrc..."
+# Ensure .zshrc exists (Oh My Zsh should have created it)
+if [ ! -f "$HOME/.zshrc" ]; then
+    touch "$HOME/.zshrc"
+fi
+
 # Note: alias starts with a space so 'r' commands won't be saved to history
 ALIAS_LINE="alias r=' ~/.venv/bin/python ~/ranger/ranger.py --choosedir=\$HOME/.config/ranger/.rangerdir; LASTDIR=\`cat \$HOME/.config/ranger/.rangerdir\`; cd \"\$LASTDIR\"; echo -en \"\\e[?25h\"'"
 
@@ -89,10 +118,37 @@ else
     echo "Ranger alias already exists in .zshrc"
 fi
 
+# Setup utils directory and scripts
+echo "Setting up utils directory..."
+mkdir -p "$HOME/utils"
+
+# Copy pr_comments to ~/utils
+cp "$SCRIPT_DIR/utils/pr_comments" "$HOME/utils/"
+chmod +x "$HOME/utils/pr_comments"
+echo "Copied pr_comments to ~/utils/"
+
+# Add ~/utils to PATH in .zshrc
+echo "Adding ~/utils to PATH..."
+PATH_LINE='export PATH="$HOME/utils:$PATH"'
+
+if ! grep -q 'export PATH="$HOME/utils:$PATH"' "$HOME/.zshrc"; then
+    echo "" >> "$HOME/.zshrc"
+    echo "# Add utils directory to PATH" >> "$HOME/.zshrc"
+    echo "$PATH_LINE" >> "$HOME/.zshrc"
+    echo "Added ~/utils to PATH in .zshrc"
+else
+    echo "~/utils already in PATH"
+fi
+
+# Setup Claude Code hooks
+echo "Setting up Claude Code hooks..."
+"$SCRIPT_DIR/scripts/setup-claude-hooks.sh"
+
 echo ""
 echo "=== Setup complete! ==="
 echo ""
 echo "To start using your new setup:"
 echo "1. Log out and log back in (or run: exec zsh)"
 echo "2. Run 'r' to launch ranger"
+echo "3. Run 'pr_comments' from anywhere to view PR comments"
 echo ""
