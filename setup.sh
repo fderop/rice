@@ -118,6 +118,16 @@ else
     echo "Ranger alias already exists in .zshrc"
 fi
 
+# Install global Claude Code preferences
+echo "Installing Claude Code preferences..."
+if [ ! -f "$HOME/.claude/CLAUDE.md" ]; then
+    mkdir -p "$HOME/.claude"
+    cp "$SCRIPT_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+    echo "Claude Code preferences installed at ~/.claude/CLAUDE.md"
+else
+    echo "~/.claude/CLAUDE.md already exists, skipping..."
+fi
+
 # Setup Claude Code hooks
 echo "Setting up Claude Code hooks..."
 "$SCRIPT_DIR/scripts/setup-claude-hooks.sh"
