@@ -63,14 +63,17 @@ fi
 echo "Configuring git..."
 existing_name=$(git config --global user.name || true)
 existing_email=$(git config --global user.email || true)
+DEFAULT_GIT_USERNAME="fderop"
+DEFAULT_GIT_EMAIL="florian.van.de.rop@gmail.com"
 if [ -n "$existing_name" ] && [ -n "$existing_email" ]; then
     echo "Git already configured: $existing_name <$existing_email>"
 else
-    read -p "Enter your git username: " git_username
-    read -p "Enter your git email: " git_email
+    git_username="${GIT_USERNAME:-$DEFAULT_GIT_USERNAME}"
+    git_email="${GIT_EMAIL:-$DEFAULT_GIT_EMAIL}"
     git config --global user.name "$git_username"
     git config --global user.email "$git_email"
     echo "Git configured with user: $git_username <$git_email>"
+    echo "  (Override with GIT_USERNAME=... GIT_EMAIL=... ./setup.sh)"
 fi
 
 # Install Ranger
