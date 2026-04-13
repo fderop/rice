@@ -120,17 +120,33 @@ fi
 
 # Install global Claude Code preferences
 echo "Installing Claude Code preferences..."
-if [ ! -f "$HOME/.claude/CLAUDE.md" ]; then
+CLAUDE_SRC="$SCRIPT_DIR/claude/CLAUDE.md"
+CLAUDE_DEST="$HOME/.claude/CLAUDE.md"
+if [ -f "$CLAUDE_SRC" ]; then
     mkdir -p "$HOME/.claude"
-    cp "$SCRIPT_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
-    echo "Claude Code preferences installed at ~/.claude/CLAUDE.md"
+    if [ -f "$CLAUDE_DEST" ] && cmp -s "$CLAUDE_SRC" "$CLAUDE_DEST"; then
+        echo "Claude Code preferences already up to date, skipping..."
+    else
+        cp "$CLAUDE_SRC" "$CLAUDE_DEST"
+        echo "Claude Code preferences installed at $CLAUDE_DEST"
+    fi
 else
-    echo "~/.claude/CLAUDE.md already exists, skipping..."
+    echo "Claude Code preferences source not found at $CLAUDE_SRC — skipping."
+    echo "  (This happens when running via 'bash <(curl ...)' since \$SCRIPT_DIR is /dev/fd.)"
+    echo "  To install Claude Code and its preferences:"
+    echo "    1. Install Claude Code: https://claude.com/claude-code"
+    echo "    2. Clone this repo: git clone https://github.com/fderop/rice.git"
+    echo "    3. Re-run ./setup.sh from the cloned directory"
 fi
 
 # Setup Claude Code hooks
 echo "Setting up Claude Code hooks..."
-"$SCRIPT_DIR/scripts/setup-claude-hooks.sh"
+if [ -f "$SCRIPT_DIR/scripts/setup-claude-hooks.sh" ]; then
+    "$SCRIPT_DIR/scripts/setup-claude-hooks.sh"
+else
+    echo "Hook script not found at $SCRIPT_DIR/scripts/setup-claude-hooks.sh — skipping."
+    echo "  (Clone the repo and re-run ./setup.sh to install hooks.)"
+fi
 
 echo ""
 echo "=== Setup complete! ==="
