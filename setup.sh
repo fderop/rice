@@ -15,9 +15,9 @@ else
     exit 1
 fi
 
-# Check if user has sudo access
+# Check if user has sudo access (prompts once, caches creds)
 echo "Checking for sudo access..."
-if sudo -n true 2>/dev/null; then
+if sudo -v 2>/dev/null; then
     echo "Sudo access detected. Installing dependencies..."
     set +e  # Temporarily disable exit on error
     if [[ "$OS" == "ubuntu" ]] || [[ "$OS" == "debian" ]]; then
@@ -54,9 +54,16 @@ fi
 
 # Set zsh as default shell
 echo "Setting zsh as default shell..."
-if [ "$SHELL" != "$(which zsh)" ]; then
-    chsh -s "$(which zsh)"
-    echo "Default shell changed to zsh. You'll need to log out and back in for this to take effect."
+ZSH_PATH="$(which zsh)"
+if [ "$SHELL" != "$ZSH_PATH" ]; then
+    if chsh -s "$ZSH_PATH" 2>/dev/null; then
+        echo "Default shell changed to zsh. Log out and back in for this to take effect."
+    elif sudo chsh -s "$ZSH_PATH" "$USER" 2>/dev/null; then
+        echo "Default shell changed to zsh via sudo. Log out and back in for this to take effect."
+    else
+        echo "Could not change default shell automatically."
+        echo "  Run manually: sudo chsh -s $ZSH_PATH $USER"
+    fi
 fi
 
 # Configure git (skip if already configured)
