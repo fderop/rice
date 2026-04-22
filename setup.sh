@@ -21,27 +21,27 @@ if sudo -v 2>/dev/null; then
     echo "Sudo access detected. Installing dependencies..."
     set +e  # Temporarily disable exit on error
     if [[ "$OS" == "ubuntu" ]] || [[ "$OS" == "debian" ]]; then
-        sudo apt-get update && sudo apt-get install -y git curl zsh python3 python3-venv
+        sudo apt-get update && sudo apt-get install -y git curl zsh python3 python3-venv nodejs npm
         if [ $? -ne 0 ]; then
             echo "Package installation failed. Skipping..."
         fi
     elif [[ "$OS" == "fedora" ]] || [[ "$OS" == "rhel" ]] || [[ "$OS" == "centos" ]]; then
-        sudo dnf install -y git curl zsh python3
+        sudo dnf install -y git curl zsh python3 nodejs npm
         if [ $? -ne 0 ]; then
             echo "Package installation failed. Skipping..."
         fi
     elif [[ "$OS" == "arch" ]] || [[ "$OS" == "manjaro" ]]; then
-        sudo pacman -S --noconfirm git curl zsh python
+        sudo pacman -S --noconfirm git curl zsh python nodejs npm
         if [ $? -ne 0 ]; then
             echo "Package installation failed. Skipping..."
         fi
     else
-        echo "Unsupported OS. Please install git, curl, zsh, and python3 manually if needed."
+        echo "Unsupported OS. Please install git, curl, zsh, python3, and nodejs/npm manually if needed."
     fi
     set -e  # Re-enable exit on error
 else
     echo "No sudo access detected. Skipping package installation."
-    echo "Please ensure git, curl, zsh, and python3 are installed."
+    echo "Please ensure git, curl, zsh, python3, and nodejs/npm are installed."
 fi
 
 # Install Oh My Zsh
@@ -126,6 +126,34 @@ if ! grep -q "alias r=" "$HOME/.zshrc"; then
     echo "Alias and history configuration added to .zshrc"
 else
     echo "Ranger alias already exists in .zshrc"
+fi
+
+# Install Claude Code and Codex CLIs via npm (user-global, no sudo)
+echo "Installing Claude Code and Codex CLIs..."
+if command -v npm >/dev/null 2>&1; then
+    NPM_PREFIX="$HOME/.npm-global"
+    mkdir -p "$NPM_PREFIX"
+    npm config set prefix "$NPM_PREFIX"
+    export PATH="$NPM_PREFIX/bin:$PATH"
+
+    if ! grep -q "\.npm-global/bin" "$HOME/.zshrc" 2>/dev/null; then
+        echo "" >> "$HOME/.zshrc"
+        echo "# npm user-global bin" >> "$HOME/.zshrc"
+        echo "export PATH=\"\$HOME/.npm-global/bin:\$PATH\"" >> "$HOME/.zshrc"
+    fi
+
+    set +e
+    npm install -g @anthropic-ai/claude-code
+    if [ $? -ne 0 ]; then
+        echo "Claude Code install failed. Continuing..."
+    fi
+    npm install -g @openai/codex
+    if [ $? -ne 0 ]; then
+        echo "Codex install failed. Continuing..."
+    fi
+    set -e
+else
+    echo "npm not found — skipping Claude Code and Codex CLI install."
 fi
 
 # Install global Claude Code preferences
