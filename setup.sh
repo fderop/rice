@@ -83,6 +83,10 @@ else
     echo "  (Override with GIT_USERNAME=... GIT_EMAIL=... ./setup.sh)"
 fi
 
+# Rewrite GitHub HTTPS remotes to SSH
+echo "Configuring git to use SSH for GitHub..."
+git config --global url."git@github.com:".insteadOf "https://github.com/"
+
 # Install Ranger
 echo "Installing Ranger..."
 if [ ! -d "$HOME/ranger" ]; then
