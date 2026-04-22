@@ -84,6 +84,10 @@ else
 fi
 
 # Install Ranger
+# Clear any existing GitHub HTTPS->SSH rewrite so the anonymous ranger pull works
+# even on re-runs where a previous setup already configured the rewrite globally.
+git config --global --unset-all url."git@github.com:".insteadOf 2>/dev/null || true
+
 echo "Installing Ranger..."
 if [ ! -d "$HOME/ranger" ]; then
     git clone https://github.com/ranger/ranger.git "$HOME/ranger"
