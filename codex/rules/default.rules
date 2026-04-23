@@ -1,0 +1,68 @@
+# Managed by rice — re-running setup.sh overwrites this file.
+# To add personal rules, create a sibling file like ~/.codex/rules/local.rules.
+# Codex scans the whole rules/ directory and applies the strictest match
+# (forbidden > prompt > allow).
+
+# ---------- prompt: destructive operations ----------
+prefix_rule(
+    pattern = ["rm"],
+    decision = "prompt",
+    justification = "Deletion requires approval to prevent data loss",
+)
+prefix_rule(pattern = ["rmdir"], decision = "prompt")
+
+prefix_rule(
+    pattern = ["git", "reset"],
+    decision = "prompt",
+    justification = "Resets can discard uncommitted or committed work",
+)
+prefix_rule(pattern = ["git", "clean"], decision = "prompt")
+prefix_rule(pattern = ["git", "branch", "-D"], decision = "prompt")
+prefix_rule(pattern = ["git", "commit", "--amend"], decision = "prompt")
+prefix_rule(pattern = ["git", "rebase"], decision = "prompt")
+prefix_rule(
+    pattern = ["git", "push", "--force"],
+    decision = "prompt",
+    justification = "Force push rewrites remote history",
+)
+prefix_rule(pattern = ["git", "push", "-f"], decision = "prompt")
+prefix_rule(pattern = ["git", "push", "--force-with-lease"], decision = "prompt")
+
+prefix_rule(
+    pattern = ["alembic", "upgrade"],
+    decision = "prompt",
+    justification = "Database migration — irreversible in production",
+)
+prefix_rule(pattern = ["alembic", "downgrade"], decision = "prompt")
+
+prefix_rule(pattern = ["docker", "compose", "down"], decision = "prompt")
+prefix_rule(pattern = ["docker-compose", "down"], decision = "prompt")
+
+prefix_rule(pattern = ["aws", "s3", "rm"], decision = "prompt")
+prefix_rule(pattern = ["aws", "s3", "rb"], decision = "prompt")
+
+prefix_rule(
+    pattern = ["terraform", "apply"],
+    decision = "prompt",
+    justification = "Infrastructure mutation",
+)
+prefix_rule(pattern = ["terraform", "destroy"], decision = "prompt")
+
+# ---------- forbidden: nuclear operations ----------
+prefix_rule(
+    pattern = ["rm", "-rf", "/"],
+    decision = "forbidden",
+    justification = "System destruction — use a targeted path instead",
+)
+prefix_rule(pattern = ["rm", "-rf", "~"], decision = "forbidden")
+prefix_rule(pattern = ["rm", "-rf", "$HOME"], decision = "forbidden")
+prefix_rule(pattern = ["rm", "-fr", "/"], decision = "forbidden")
+
+prefix_rule(
+    pattern = ["git", "push", "--force", "origin", "main"],
+    decision = "forbidden",
+    justification = "Force-push to main blocked — open a PR instead",
+)
+prefix_rule(pattern = ["git", "push", "--force", "origin", "master"], decision = "forbidden")
+prefix_rule(pattern = ["git", "push", "-f", "origin", "main"], decision = "forbidden")
+prefix_rule(pattern = ["git", "push", "-f", "origin", "master"], decision = "forbidden")

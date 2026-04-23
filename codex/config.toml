@@ -1,0 +1,10 @@
+# Managed by rice — re-running setup.sh overwrites this file.
+# Personal codex config (trusted projects, model, API settings) should live
+# elsewhere; this file will be clobbered on every rice update.
+# See: https://developers.openai.com/codex/config-reference
+
+approval_policy = "on-request"
+sandbox_mode    = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = false
