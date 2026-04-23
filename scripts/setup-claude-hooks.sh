@@ -74,12 +74,60 @@ FULL_HOOKS=$(jq -n \
   --argjson preTool "$PRE_TOOL_HOOKS" \
   '$lifecycle + {"PreToolUse": $preTool}')
 
+# Destructive-command permission rules. Ask rules prompt before running;
+# deny rules block outright. Leaves .permissions.allow and .defaultMode alone.
+ASK_RULES='[
+  "Bash(rm:*)",
+  "Bash(rmdir:*)",
+  "Bash(git reset:*)",
+  "Bash(git clean:*)",
+  "Bash(git branch -D:*)",
+  "Bash(git commit --amend:*)",
+  "Bash(git rebase:*)",
+  "Bash(git push --force:*)",
+  "Bash(git push -f:*)",
+  "Bash(git push --force-with-lease:*)",
+  "Bash(alembic upgrade:*)",
+  "Bash(alembic downgrade:*)",
+  "Bash(docker compose down:*)",
+  "Bash(docker-compose down:*)",
+  "Bash(aws s3 rm:*)",
+  "Bash(aws s3 rb:*)",
+  "Bash(terraform apply:*)",
+  "Bash(terraform destroy:*)"
+]'
+
+DENY_RULES='[
+  "Bash(rm -rf /:*)",
+  "Bash(rm -rf /*)",
+  "Bash(rm -fr /:*)",
+  "Bash(rm -rf ~:*)",
+  "Bash(rm -rf ~/)",
+  "Bash(rm -rf $HOME:*)",
+  "Bash(git push --force origin main:*)",
+  "Bash(git push --force origin master:*)",
+  "Bash(git push -f origin main:*)",
+  "Bash(git push -f origin master:*)"
+]'
+
 if [ -f "$SETTINGS_FILE" ]; then
-  # Merge hooks into existing settings using jq
   tmp=$(mktemp)
-  jq --argjson hooks "$FULL_HOOKS" '.hooks = $hooks' "$SETTINGS_FILE" > "$tmp" && mv "$tmp" "$SETTINGS_FILE"
+  jq \
+    --argjson hooks "$FULL_HOOKS" \
+    --argjson ask "$ASK_RULES" \
+    --argjson deny "$DENY_RULES" \
+    '.hooks = $hooks
+     | .permissions = (.permissions // {})
+     | .permissions.ask = $ask
+     | .permissions.deny = $deny' \
+    "$SETTINGS_FILE" > "$tmp" && mv "$tmp" "$SETTINGS_FILE"
 else
-  jq -n --argjson hooks "$FULL_HOOKS" '{hooks: $hooks}' > "$SETTINGS_FILE"
+  jq -n \
+    --argjson hooks "$FULL_HOOKS" \
+    --argjson ask "$ASK_RULES" \
+    --argjson deny "$DENY_RULES" \
+    '{hooks: $hooks, permissions: {ask: $ask, deny: $deny}}' \
+    > "$SETTINGS_FILE"
 fi
 
-echo "Claude Code hooks installed in $SETTINGS_FILE"
+echo "Claude Code hooks and permission rules installed in $SETTINGS_FILE"

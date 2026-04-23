@@ -185,6 +185,18 @@ else
     echo "    3. Re-run ./setup.sh from the cloned directory"
 fi
 
+# Install global Claude Code skills
+echo "Installing Claude Code skills..."
+SKILLS_SRC="$SCRIPT_DIR/claude/skills"
+SKILLS_DEST="$HOME/.claude/skills"
+if [ -d "$SKILLS_SRC" ]; then
+    mkdir -p "$SKILLS_DEST"
+    cp -r "$SKILLS_SRC/." "$SKILLS_DEST/"
+    echo "Claude Code skills installed at $SKILLS_DEST"
+else
+    echo "Claude Code skills source not found at $SKILLS_SRC — skipping."
+fi
+
 # Setup Claude Code hooks
 echo "Setting up Claude Code hooks..."
 if [ -f "$SCRIPT_DIR/scripts/setup-claude-hooks.sh" ]; then
@@ -194,11 +206,20 @@ else
     echo "  (Clone the repo and re-run ./setup.sh to install hooks.)"
 fi
 
+# Setup Codex CLI safety config
+echo "Setting up Codex CLI safety config..."
+if [ -f "$SCRIPT_DIR/scripts/setup-codex.sh" ]; then
+    "$SCRIPT_DIR/scripts/setup-codex.sh"
+else
+    echo "Codex setup script not found at $SCRIPT_DIR/scripts/setup-codex.sh — skipping."
+    echo "  (Clone the repo and re-run ./setup.sh to install.)"
+fi
+
 echo ""
 echo "=== Setup complete! ==="
 echo ""
 echo "To start using your new setup:"
 echo "1. Log out and log back in (or run: exec zsh)"
 echo "2. Run 'r' to launch ranger"
-echo "3. Claude Code hooks are configured"
+echo "3. Claude Code hooks and Codex safety rules are configured"
 echo ""
