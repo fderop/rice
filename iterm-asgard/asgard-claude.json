@@ -1,0 +1,15 @@
+{
+  "Profiles": [
+    {
+      "Name": "Asgard + Claude",
+      "Guid": "asgard-claude-fdr-001",
+      "Custom Command": "Yes",
+      "Command": "__HOME__/.iterm-asgard-claude.sh",
+      "Working Directory": "__HOME__",
+      "Custom Directory": "No",
+      "Close Sessions On End": false,
+      "Prompt Before Closing 2": false,
+      "Badge Text": "asgard"
+    }
+  ]
+}

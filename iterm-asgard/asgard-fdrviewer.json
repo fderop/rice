@@ -1,0 +1,15 @@
+{
+  "Profiles": [
+    {
+      "Name": "Asgard + fdr-viewer",
+      "Guid": "asgard-fdrviewer-fdr-001",
+      "Custom Command": "Yes",
+      "Command": "__HOME__/.iterm-asgard-fdrviewer.sh",
+      "Working Directory": "__HOME__",
+      "Custom Directory": "No",
+      "Close Sessions On End": false,
+      "Prompt Before Closing 2": false,
+      "Badge Text": "asgard:fdr-viewer"
+    }
+  ]
+}
