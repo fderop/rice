@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+#
+# git-new-branch <branch-name>
+#
+# Collapses the "start a new branch off latest default" dance into one command.
+# Named `git-new-branch` so git auto-discovers it on PATH and it can be invoked
+# as `git new-branch <name>`.
+#
+# Steps performed:
+#   1. Validate args.
+#   2. Confirm we're inside a git repo and cd to its toplevel.
+#   3. Abort on a dirty working tree (caller should surface this, no auto-stash).
+#   4. Detect the default branch from origin/HEAD (fall back to `main`).
+#   5. Fetch the default branch from origin.
+#   6. Resolve name collisions by appending -2, -3, ... until free.
+#   7. Create and check out the new branch off origin/<default>.
+#   8. Print one machine-readable summary line on success.
+#
+# Every failure path prints one clear, actionable message to stderr.
+set -euo pipefail
+
+# --- 1. Argument validation ------------------------------------------------
+if [ "$#" -ne 1 ] || [ -z "${1:-}" ]; then
+    echo "usage: git new-branch <branch-name>" >&2
+    exit 2
+fi
+requested="$1"
+
+# --- 2. Must be inside a git repo ------------------------------------------
+toplevel="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+    echo "error: not inside a git repository" >&2
+    exit 1
+}
+cd "$toplevel"
+
+# --- 3. Working tree must be clean -----------------------------------------
+dirty="$(git status --porcelain)"
+if [ -n "$dirty" ]; then
+    {
+        echo "error: working tree is dirty; commit or stash before starting a new branch."
+        echo "dirty files:"
+        echo "$dirty"
+    } >&2
+    exit 1
+fi
+
+# --- 4. Detect the default branch ------------------------------------------
+# origin/HEAD points at the remote's default branch, e.g. "origin/main".
+default="$(git symbolic-ref refs/remotes/origin/HEAD --short 2>/dev/null || true)"
+default="${default#origin/}"
+if [ -z "$default" ]; then
+    default="main"
+fi
+
+# --- 5. Fetch the default branch from origin -------------------------------
+if ! fetch_err="$(git fetch origin "$default" 2>&1)"; then
+    {
+        echo "error: failed to fetch origin/$default"
+        echo "$fetch_err"
+    } >&2
+    exit 1
+fi
+
+# --- 6. Resolve name collisions --------------------------------------------
+# A name collides if it exists locally or on the remote. Append -2, -3, ...
+branch_exists() {
+    local name="$1"
+    if git rev-parse --verify --quiet "refs/heads/$name" >/dev/null; then
+        return 0
+    fi
+    if git ls-remote --exit-code --heads origin "$name" >/dev/null 2>&1; then
+        return 0
+    fi
+    return 1
+}
+
+final="$requested"
+suffix=2
+while branch_exists "$final"; do
+    final="${requested}-${suffix}"
+    suffix=$((suffix + 1))
+done
+
+# --- 7. Create and check out the new branch --------------------------------
+if ! checkout_err="$(git checkout -b "$final" "origin/$default" 2>&1)"; then
+    {
+        echo "error: failed to create branch '$final' from origin/$default"
+        echo "$checkout_err"
+    } >&2
+    exit 1
+fi
+
+# --- 8. Machine-readable success summary -----------------------------------
+short_sha="$(git rev-parse --short HEAD)"
+if [ "$final" != "$requested" ]; then
+    echo "OK created '$final' (requested '$requested' was taken) from origin/$default at $short_sha"
+else
+    echo "OK created '$final' from origin/$default at $short_sha"
+fi
+exit 0

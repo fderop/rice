@@ -164,6 +164,27 @@ else
     echo "npm not found — skipping Claude Code and Codex CLI install."
 fi
 
+# Install repo helper scripts onto PATH
+echo "Installing helper scripts from bin/..."
+BIN_SRC="$SCRIPT_DIR/bin"
+LOCAL_BIN="$HOME/.local/bin"
+if [ -d "$BIN_SRC" ]; then
+    mkdir -p "$LOCAL_BIN"
+    for f in "$BIN_SRC"/*; do
+        [ -e "$f" ] || continue
+        ln -sf "$f" "$LOCAL_BIN/$(basename "$f")"
+    done
+    echo "Helper scripts symlinked into $LOCAL_BIN"
+
+    if ! grep -q "\.local/bin" "$HOME/.zshrc" 2>/dev/null; then
+        echo "" >> "$HOME/.zshrc"
+        echo "# user-local bin (repo helper scripts)" >> "$HOME/.zshrc"
+        echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> "$HOME/.zshrc"
+    fi
+else
+    echo "Helper scripts source not found at $BIN_SRC — skipping."
+fi
+
 # Install global Claude Code preferences
 echo "Installing Claude Code preferences..."
 CLAUDE_SRC="$SCRIPT_DIR/claude/CLAUDE.md"
