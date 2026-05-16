@@ -1,6 +1,6 @@
 ---
 name: codex
-description: Discuss the current problem with codex CLI, iterate until consensus or deadlock, report the outcome. Codex gets read-only repo access except env/secret files.
+description: Consult codex CLI on the current problem. Read-only mode (default) iterates to consensus; write mode lets codex edit files when explicitly asked. Never reads env/secret files.
 argument-hint: [optional problem framing — else infer from conversation]
 allowed-tools: [Bash, Read, Grep, Glob]
 ---
