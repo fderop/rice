@@ -7,7 +7,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "=== Starting terminal setup ==="
 
 # Detect OS for package manager
-if [ -f /etc/os-release ]; then
+if [ "$(uname)" = "Darwin" ]; then
+    OS="macos"
+elif [ -f /etc/os-release ]; then
     . /etc/os-release
     OS=$ID
 else
@@ -15,33 +17,56 @@ else
     exit 1
 fi
 
+# Install dependencies via the platform package manager
+if [[ "$OS" == "macos" ]]; then
+    # macOS uses Homebrew (no sudo). zsh and curl already ship with macOS.
+    echo "Installing dependencies via Homebrew..."
+    if ! command -v brew >/dev/null 2>&1; then
+        echo "Homebrew not found. Installing Homebrew..."
+        NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    fi
+    # Ensure brew is on PATH for this session (Apple Silicon and Intel locations)
+    if [ -x /opt/homebrew/bin/brew ]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [ -x /usr/local/bin/brew ]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+    if command -v brew >/dev/null 2>&1; then
+        set +e
+        brew install git python3 node jq
+        if [ $? -ne 0 ]; then
+            echo "Some Homebrew packages failed to install. Continuing..."
+        fi
+        set -e
+    else
+        echo "Homebrew unavailable — install git, python3, node, and jq manually."
+    fi
 # Check if user has sudo access (prompts once, caches creds)
-echo "Checking for sudo access..."
-if sudo -v 2>/dev/null; then
+elif echo "Checking for sudo access..." && sudo -v 2>/dev/null; then
     echo "Sudo access detected. Installing dependencies..."
     set +e  # Temporarily disable exit on error
     if [[ "$OS" == "ubuntu" ]] || [[ "$OS" == "debian" ]]; then
-        sudo apt-get update && sudo apt-get install -y git curl zsh python3 python3-venv nodejs npm
+        sudo apt-get update && sudo apt-get install -y git curl zsh python3 python3-venv nodejs npm jq
         if [ $? -ne 0 ]; then
             echo "Package installation failed. Skipping..."
         fi
     elif [[ "$OS" == "fedora" ]] || [[ "$OS" == "rhel" ]] || [[ "$OS" == "centos" ]]; then
-        sudo dnf install -y git curl zsh python3 nodejs npm
+        sudo dnf install -y git curl zsh python3 nodejs npm jq
         if [ $? -ne 0 ]; then
             echo "Package installation failed. Skipping..."
         fi
     elif [[ "$OS" == "arch" ]] || [[ "$OS" == "manjaro" ]]; then
-        sudo pacman -S --noconfirm git curl zsh python nodejs npm
+        sudo pacman -S --noconfirm git curl zsh python nodejs npm jq
         if [ $? -ne 0 ]; then
             echo "Package installation failed. Skipping..."
         fi
     else
-        echo "Unsupported OS. Please install git, curl, zsh, python3, and nodejs/npm manually if needed."
+        echo "Unsupported OS. Please install git, curl, zsh, python3, nodejs/npm, and jq manually if needed."
     fi
     set -e  # Re-enable exit on error
 else
     echo "No sudo access detected. Skipping package installation."
-    echo "Please ensure git, curl, zsh, python3, and nodejs/npm are installed."
+    echo "Please ensure git, curl, zsh, python3, nodejs/npm, and jq are installed."
 fi
 
 # Install Oh My Zsh
@@ -134,6 +159,16 @@ if ! grep -q "alias r=" "$HOME/.zshrc"; then
     echo "Alias and history configuration added to .zshrc"
 else
     echo "Ranger alias already exists in .zshrc"
+fi
+
+# Persist Homebrew on PATH for future shells (macOS)
+if [[ "$OS" == "macos" ]] && command -v brew >/dev/null 2>&1; then
+    BREW_BIN="$(command -v brew)"
+    if ! grep -q "brew shellenv" "$HOME/.zshrc" 2>/dev/null; then
+        echo "" >> "$HOME/.zshrc"
+        echo "# Homebrew" >> "$HOME/.zshrc"
+        echo "eval \"\$($BREW_BIN shellenv)\"" >> "$HOME/.zshrc"
+    fi
 fi
 
 # Install Claude Code and Codex CLIs via npm (user-global, no sudo)
