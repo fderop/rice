@@ -80,15 +80,32 @@ fi
 # Set zsh as default shell
 echo "Setting zsh as default shell..."
 ZSH_PATH="$(which zsh)"
-if [ "$SHELL" != "$ZSH_PATH" ]; then
-    if chsh -s "$ZSH_PATH" 2>/dev/null; then
+
+# Read the login shell from the user database, not $SHELL: $SHELL reflects the
+# *current* process and may already be zsh (e.g. when run from a zsh subshell)
+# while the actual login shell is still bash, which is exactly the "reverts to
+# bash on login" symptom.
+case "$(uname -s)" in
+    Darwin) CURRENT_LOGIN_SHELL="$(dscl . -read "/Users/$USER" UserShell 2>/dev/null | awk '{print $2}')" ;;
+    *)      CURRENT_LOGIN_SHELL="$(getent passwd "$USER" 2>/dev/null | cut -d: -f7)" ;;
+esac
+
+if [ "$CURRENT_LOGIN_SHELL" != "$ZSH_PATH" ]; then
+    # chsh refuses any shell not listed in /etc/shells, so register zsh first.
+    if ! grep -qxF "$ZSH_PATH" /etc/shells 2>/dev/null; then
+        echo "Registering $ZSH_PATH in /etc/shells..."
+        echo "$ZSH_PATH" | sudo tee -a /etc/shells >/dev/null
+    fi
+
+    # Don't swallow chsh's stderr: when it fails, the message explains why.
+    if chsh -s "$ZSH_PATH" 2>/tmp/chsh.err || sudo chsh -s "$ZSH_PATH" "$USER" 2>/tmp/chsh.err; then
         echo "Default shell changed to zsh. Log out and back in for this to take effect."
-    elif sudo chsh -s "$ZSH_PATH" "$USER" 2>/dev/null; then
-        echo "Default shell changed to zsh via sudo. Log out and back in for this to take effect."
     else
-        echo "Could not change default shell automatically."
+        echo "Could not change default shell automatically:"
+        sed 's/^/  /' /tmp/chsh.err
         echo "  Run manually: sudo chsh -s $ZSH_PATH $USER"
     fi
+    rm -f /tmp/chsh.err
 fi
 
 # Configure git (skip if already configured)
