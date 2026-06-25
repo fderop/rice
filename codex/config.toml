@@ -7,4 +7,16 @@ approval_policy = "on-request"
 sandbox_mode    = "workspace-write"
 
 [sandbox_workspace_write]
-network_access = false
+network_access = true
+
+[projects."/home/fdr/glass_bio"]
+trust_level = "trusted"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+
+[apps.connector_76869538009648d5b282a4bb21c3d157.tools."github.update_file"]
+approval_mode = "approve"
+
+[apps.connector_76869538009648d5b282a4bb21c3d157.tools."github.create_pull_request"]
+approval_mode = "approve"

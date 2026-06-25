@@ -66,3 +66,4 @@ prefix_rule(
 prefix_rule(pattern = ["git", "push", "--force", "origin", "master"], decision = "forbidden")
 prefix_rule(pattern = ["git", "push", "-f", "origin", "main"], decision = "forbidden")
 prefix_rule(pattern = ["git", "push", "-f", "origin", "master"], decision = "forbidden")
+prefix_rule(pattern=["id"], decision="allow")

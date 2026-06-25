@@ -1,0 +1,16 @@
+# Managed by rice — re-running setup.sh overwrites this file.
+# Persistent low-risk command prefixes that may run without prompting when
+# Codex needs to execute them outside the sandbox.
+
+prefix_rule(pattern = ["rg"], decision = "allow")
+prefix_rule(pattern = ["sed"], decision = "allow")
+prefix_rule(pattern = ["find"], decision = "allow")
+prefix_rule(pattern = ["ls"], decision = "allow")
+prefix_rule(pattern = ["pwd"], decision = "allow")
+prefix_rule(pattern = ["git", "status"], decision = "allow")
+prefix_rule(pattern = ["git", "diff"], decision = "allow")
+prefix_rule(pattern = ["git", "diff", "--cached"], decision = "allow")
+prefix_rule(pattern = ["git", "commit", "-m"], decision = "allow")
+prefix_rule(pattern = ["git", "push", "-u", "origin"], decision = "allow")
+prefix_rule(pattern = ["./node_modules/.bin/next", "dev"], decision = "allow")
+prefix_rule(pattern = ["node", "/home/fdr/.codex/skills/.system/openai-docs/scripts/fetch-codex-manual.mjs"], decision = "allow")

@@ -7,10 +7,14 @@ CODEX_DIR="$HOME/.codex"
 
 mkdir -p "$CODEX_DIR/rules"
 
-# Rules file: rice owns it, always overwrite. User-added rules go in a
-# sibling file (e.g. ~/.codex/rules/local.rules) — codex scans the dir.
-cp "$SRC_DIR/rules/default.rules" "$CODEX_DIR/rules/default.rules"
-echo "Codex safety rules installed at $CODEX_DIR/rules/default.rules"
+# Rules files: rice owns every *.rules file in codex/rules and overwrites
+# matching files under ~/.codex/rules. Extra local sibling files are left alone;
+# codex scans the whole rules directory.
+for rules_file in "$SRC_DIR"/rules/*.rules; do
+    [ -e "$rules_file" ] || continue
+    cp "$rules_file" "$CODEX_DIR/rules/$(basename "$rules_file")"
+    echo "Codex rules installed at $CODEX_DIR/rules/$(basename "$rules_file")"
+done
 
 # config.toml: rice owns it, always overwrite. Put personal codex config
 # (trusted projects, model overrides, etc.) in ~/.codex/config.local.toml
