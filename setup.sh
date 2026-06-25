@@ -6,6 +6,25 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "=== Starting terminal setup ==="
 
+# Self-bootstrap: when piped (e.g. `curl ... | bash`), only setup.sh exists and
+# $SCRIPT_DIR has none of the repo's sibling files. Fetch the full repo tarball
+# and re-point $SCRIPT_DIR at it so the skills/hooks/codex/prefs steps can run.
+# Uses curl+tar (not git) so it works on a fresh machine before git is installed.
+if [ ! -d "$SCRIPT_DIR/claude/skills" ]; then
+    echo "Repo files not found next to script (piped install?) — fetching full repo..."
+    CACHE_DIR="$HOME/.cache/rice-setup"
+    rm -rf "$CACHE_DIR"
+    mkdir -p "$CACHE_DIR"
+    if command -v curl >/dev/null 2>&1 && \
+       curl -fsSL "https://github.com/fderop/rice/archive/refs/heads/main.tar.gz" \
+         | tar -xz -C "$CACHE_DIR" --strip-components=1; then
+        SCRIPT_DIR="$CACHE_DIR"
+        echo "Repo fetched to $CACHE_DIR"
+    else
+        echo "Could not fetch repo — skills, hooks, codex, and prefs steps will be skipped."
+    fi
+fi
+
 # Detect OS for package manager
 if [ "$(uname)" = "Darwin" ]; then
     OS="macos"
