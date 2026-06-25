@@ -23,3 +23,19 @@ open -a iTerm                  # creates the prefs plist, then quit it
 The script deploys two wrappers (`~/.iterm-asgard-{claude,fdrviewer}.sh`), two iTerm2 Dynamic Profiles, and the Ctrl+N keybinding. Idempotent. Refuses to run while iTerm2 is open. Templates live in `iterm-asgard/` with `__HOME__` placeholders substituted at install time.
 
 Assumed but not verified: `Host asgard` in `~/.ssh/config`, aws-vault profiles `claude-viewer-fdr` and `fdr-viewer` on asgard, `claude` on PATH on asgard, worktrees `/home/fdr/repositories/glass_bio{,_2,_3,_4}`.
+
+## Codex config sync
+
+Rice pushes Codex config to the local machine with:
+
+```bash
+./scripts/setup-codex.sh
+```
+
+To make rice match the current local Codex config and permission rules, pull them back with:
+
+```bash
+./scripts/sync-codex-from-local.sh
+```
+
+That copies `~/.codex/config.toml` and every `~/.codex/rules/*.rules` into `codex/`, then prints the git status so the changes can be reviewed and committed.
