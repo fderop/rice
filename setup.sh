@@ -180,6 +180,44 @@ else
     echo "Ranger alias already exists in .zshrc"
 fi
 
+# Add `main` git helper function to .zshrc
+if ! grep -q "^main() {" "$HOME/.zshrc"; then
+    echo "Adding 'main' git helper to .zshrc..."
+    cat >> "$HOME/.zshrc" <<'MAIN_FUNC'
+
+# `main`: switch this worktree to main and pull. If main is checked out in
+# another worktree, park that worktree on placeholder `test` (or `test2` if
+# test is taken) to free up main, then switch here.
+main() {
+  if git switch main 2>/dev/null; then
+    git pull
+    return
+  fi
+  local other
+  other=$(git worktree list --porcelain | awk '
+    /^worktree /{p=substr($0,10)}
+    /^branch refs\/heads\/main$/{print p}')
+  if [[ -z "$other" ]]; then
+    echo "main: could not switch to main (uncommitted changes?)." >&2
+    return 1
+  fi
+  local b
+  for b in test test2; do
+    if git -C "$other" switch "$b" 2>/dev/null || git -C "$other" switch -c "$b" 2>/dev/null; then
+      echo "main: parked '$other' on '$b' to free up main." >&2
+      git switch main
+      git pull
+      return
+    fi
+  done
+  echo "main: could not park '$other' on test or test2." >&2
+  return 1
+}
+MAIN_FUNC
+else
+    echo "'main' git helper already exists in .zshrc"
+fi
+
 # Persist Homebrew on PATH for future shells (macOS)
 if [[ "$OS" == "macos" ]] && command -v brew >/dev/null 2>&1; then
     BREW_BIN="$(command -v brew)"
