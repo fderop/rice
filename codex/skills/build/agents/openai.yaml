@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build"
+  short_description: "Branch, implement, review, and ship"
+  default_prompt: "Build this feature end to end and open a PR."

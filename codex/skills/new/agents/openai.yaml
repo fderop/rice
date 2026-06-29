@@ -1,0 +1,4 @@
+interface:
+  display_name: "New"
+  short_description: "Start a task on a fresh branch"
+  default_prompt: "Start a new branch for this task and begin the work."

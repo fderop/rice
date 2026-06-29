@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ship"
+  short_description: "Push the branch and open a PR"
+  default_prompt: "Ship this branch as a ready-for-review pull request."

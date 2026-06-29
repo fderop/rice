@@ -6,6 +6,7 @@ SRC_DIR="$SCRIPT_DIR/../codex"
 CODEX_DIR="$HOME/.codex"
 
 mkdir -p "$CODEX_DIR/rules"
+mkdir -p "$CODEX_DIR/skills"
 
 # Rules files: rice owns every *.rules file in codex/rules and overwrites
 # matching files under ~/.codex/rules. Extra local sibling files are left alone;
@@ -21,3 +22,15 @@ done
 # or inline additions that don't conflict with the managed keys.
 cp "$SRC_DIR/config.toml" "$CODEX_DIR/config.toml"
 echo "Codex config installed at $CODEX_DIR/config.toml"
+
+# Skills: rice owns codex/skills/* and overwrites matching skill directories
+# under ~/.codex/skills. Extra local sibling skills are left alone.
+if [ -d "$SRC_DIR/skills" ]; then
+    for skill_dir in "$SRC_DIR"/skills/*; do
+        [ -d "$skill_dir" ] || continue
+        dest="$CODEX_DIR/skills/$(basename "$skill_dir")"
+        rm -rf "$dest"
+        cp -R "$skill_dir" "$dest"
+        echo "Codex skill installed at $dest"
+    done
+fi

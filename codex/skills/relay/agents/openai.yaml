@@ -1,0 +1,4 @@
+interface:
+  display_name: "Relay"
+  short_description: "Work with the local Relay issue tracker"
+  default_prompt: "Show my Relay ready queue."
