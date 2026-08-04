@@ -5,18 +5,69 @@
 
 approval_policy = "on-request"
 sandbox_mode    = "workspace-write"
+model = "gpt-5.6-sol"
+model_reasoning_effort = "medium"
 
 [sandbox_workspace_write]
 network_access = true
 
-[projects."/home/fdr/glass_bio"]
+[projects."__HOME__/glass_bio"]
+trust_level = "trusted"
+
+[projects."__HOME__"]
+trust_level = "trusted"
+
+[projects."__HOME__/rice"]
+trust_level = "trusted"
+
+[projects."__HOME__/cherimoya"]
+trust_level = "trusted"
+
+[projects."__HOME__/telohaec-cherimoya-mvp"]
+trust_level = "trusted"
+
+[projects."__HOME__/cherimoya-telohaec"]
+trust_level = "trusted"
+
+[projects."__HOME__/codex"]
+trust_level = "trusted"
+
+[projects."__HOME__/claude-code"]
+trust_level = "trusted"
+
+[projects."__HOME__/mathbio"]
+trust_level = "trusted"
+
+[projects."__HOME__/agnost"]
+trust_level = "trusted"
+
+[projects."__HOME__/agnost_2"]
+trust_level = "trusted"
+
+[projects."__HOME__/harness_analysis"]
+trust_level = "trusted"
+
+[projects."__HOME__/evals"]
 trust_level = "trusted"
 
 [tui.model_availability_nux]
 "gpt-5.5" = 4
+"gpt-5.6-sol" = 4
 
 [apps.connector_76869538009648d5b282a4bb21c3d157.tools."github.update_file"]
 approval_mode = "approve"
 
 [apps.connector_76869538009648d5b282a4bb21c3d157.tools."github.create_pull_request"]
 approval_mode = "approve"
+
+[apps.connector_76869538009648d5b282a4bb21c3d157.tools."github.create_branch"]
+approval_mode = "approve"
+
+[apps.connector_76869538009648d5b282a4bb21c3d157.tools."github.update_ref"]
+approval_mode = "approve"
+
+[apps.connector_76869538009648d5b282a4bb21c3d157.tools."github.create_commit"]
+approval_mode = "approve"
+
+[notice]
+hide_rate_limit_model_nudge = true

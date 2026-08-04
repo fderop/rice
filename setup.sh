@@ -304,6 +304,7 @@ SKILLS_SRC="$SCRIPT_DIR/claude/skills"
 SKILLS_DEST="$HOME/.claude/skills"
 if [ -d "$SKILLS_SRC" ]; then
     mkdir -p "$SKILLS_DEST"
+    find "$SKILLS_DEST" -mindepth 1 -maxdepth 1 ! -name '.*' -exec rm -rf {} +
     cp -r "$SKILLS_SRC/." "$SKILLS_DEST/"
     echo "Claude Code skills installed at $SKILLS_DEST"
 else
