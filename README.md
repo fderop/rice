@@ -38,4 +38,7 @@ To make rice match the current local Codex config and permission rules, pull the
 ./scripts/sync-codex-from-local.sh
 ```
 
-That copies `~/.codex/config.toml` and every `~/.codex/rules/*.rules` into `codex/`, then prints the git status so the changes can be reviewed and committed.
+That copies the Codex configuration, rules, global instructions, and custom skills into `codex/`. Then it prints the git status.
+
+The setup does not copy authentication, sessions, caches, or system-managed skills. Sign in to Claude and Codex on each new machine.
+The installer replaces `__HOME__` in the Codex configuration with the current home directory.

@@ -119,14 +119,17 @@ if [ -f "$SETTINGS_FILE" ]; then
     '.hooks = $hooks
      | .permissions = (.permissions // {})
      | .permissions.ask = $ask
-     | .permissions.deny = $deny' \
+     | .permissions.deny = $deny
+     | .skipWorkflowUsageWarning = true
+     | .theme = "auto"
+     | .tui = "default"' \
     "$SETTINGS_FILE" > "$tmp" && mv "$tmp" "$SETTINGS_FILE"
 else
   jq -n \
     --argjson hooks "$FULL_HOOKS" \
     --argjson ask "$ASK_RULES" \
     --argjson deny "$DENY_RULES" \
-    '{hooks: $hooks, permissions: {ask: $ask, deny: $deny}}' \
+    '{hooks: $hooks, permissions: {ask: $ask, deny: $deny}, skipWorkflowUsageWarning: true, theme: "auto", tui: "default"}' \
     > "$SETTINGS_FILE"
 fi
 
