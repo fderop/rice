@@ -1,0 +1,4 @@
+interface:
+  display_name: "Supervise Herdr Codex"
+  short_description: "Supervise Codex executors in Herdr panes"
+  default_prompt: "Use $supervise-herdr-codex to supervise a Codex executor for this task."
