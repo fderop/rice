@@ -42,3 +42,15 @@ That copies the Codex configuration, rules, global instructions, and custom skil
 
 The setup does not copy authentication, sessions, caches, or system-managed skills. Sign in to Claude and Codex on each new machine.
 The installer replaces `__HOME__` in the Codex configuration with the current home directory.
+
+## Zsh settings
+
+Install the shared aliases, PATH entries, AWS Vault backend, and Git helpers with:
+
+```bash
+./scripts/setup-zsh.sh
+```
+
+The installer adds a source line to `.zshrc` and copies the settings to `~/.config/rice/rice.zsh`.
+Run it again to update those settings. It preserves other `.zshrc` content, including local database settings.
+The `main()` helper updates `main` and fast-forwards the `main_copy_1` through `main_copy_3` worktrees.

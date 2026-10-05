@@ -5,8 +5,9 @@
 
 approval_policy = "on-request"
 sandbox_mode    = "workspace-write"
-model = "gpt-5.6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "medium"
+service_tier = "default"
 
 [sandbox_workspace_write]
 network_access = true
@@ -50,9 +51,121 @@ trust_level = "trusted"
 [projects."__HOME__/evals"]
 trust_level = "trusted"
 
+[projects."__HOME__/glass_bio-matters-arising-mining"]
+trust_level = "trusted"
+
+[projects."/data/evals/bsbench/case-001-runs/2026-08-10-pre"]
+trust_level = "trusted"
+
+[projects."/tmp"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v1/attempts/b3646ca035b654563699cb85/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v1/attempts/310dcdbef1e407d07f3d7eec/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/d9db8d0f8bb80516288cd18d/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/6b25fd25c9f8f962f54dce02/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/118dacfccdfddfb67ed04065/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/522d70e9fc9b5b2e8678c1e7/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/2a486d37e39358792baccd39/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/a53b2ffa5ab3381bc1cac557/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/947a51ad9009f9861fc32cbf/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/17177471125877d3e7c1da0e/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/0738a06c692d958b41a7776d/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/d3910f874e386534e08b1875/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/4d0f1a09bd71f8bb48641ec7/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/fd0041e900dda3ddbf5232f1/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/58d9a19daa78eeb1197892bd/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/f143398a82b89ac7ffb5ff2a/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/a7aa4089a439cdc799640208/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/4e25910c910fe2af1160aa94/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/b2621f280c4553b6cd7174f5/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/4f4233ed37a36301642a92f9/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/9abdd3378943e0d7583884b1/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/9262d025134678a0e13026fb/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/00213fb48b18230c0385c398/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/3231544c2fe8066fffd144de/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/67071a843b546009d2a582a3/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/runs/bsbench-codex-no-web-pre-20260816-v2/attempts/d1ba2c4f820f7037b668f547/native/workspace"]
+trust_level = "trusted"
+
+[projects."/data/evals/bsbench/worktrees"]
+trust_level = "trusted"
+
+[projects."/data/virtual_embryo"]
+trust_level = "trusted"
+
+[projects."__HOME__/harmonypy"]
+trust_level = "trusted"
+
+[projects."__HOME__/harmony-r-local"]
+trust_level = "trusted"
+
+[projects."__HOME__/scanpy"]
+trust_level = "trusted"
+
+[projects."__HOME__/voynich"]
+trust_level = "trusted"
+
+[tui]
+screen_reader_detection_done = true
+status_line = ["model-with-reasoning", "current-dir", "thread-name", "five-hour-limit", "weekly-limit"]
+status_line_use_colors = true
+
 [tui.model_availability_nux]
 "gpt-5.5" = 4
 "gpt-5.6-sol" = 4
+gpt-6-astra = 4
+"gpt-6.1-sol" = 4
 
 [apps.connector_76869538009648d5b282a4bb21c3d157.tools."github.update_file"]
 approval_mode = "approve"

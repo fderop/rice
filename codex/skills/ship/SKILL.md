@@ -52,7 +52,36 @@ Create or update the PR using GitHub tooling available in the environment.
 - [ ] <command or manual check>
 ```
 
-Do not merge the PR. Do not close Relay issues unless the user explicitly approves.
+### Images
+
+When the branch contains useful figures or screenshots, embed them in the PR body after the
+relevant text. Push the image files before you update the PR body. Use an absolute GitHub `blob`
+URL with `?raw=1` so GitHub displays each image:
+
+```markdown
+![Descriptive image text](https://github.com/<owner>/<repo>/blob/<branch>/<path/to/image.png>?raw=1)
+```
+
+Use descriptive alternative text. Do not use a local file path or a relative path in the PR body.
+
+Do not merge the PR unless the user explicitly approves. Do not close Relay issues unless the user explicitly approves.
+
+## CI Before Squash Merge
+
+Require CI only before an authorized squash merge. Do not require CI for each commit, push, or PR creation or update.
+Keep configured local hooks enabled. Run relevant local checks during development and shipping.
+
+For `glass-bio/glass_bio` and its worktrees, use this merge procedure:
+
+1. From a clean, committed branch with an open PR, run `just pr-check --background`.
+2. Let the detached process poll CI until completion. Read its final `result.json`.
+3. Require `status: passed` and a `checked_sha` that matches the current PR head.
+4. Immediately before merging, check that the PR head still matches `checked_sha`.
+5. If the head changed, run CI again for the new head.
+6. Merge with `gh pr merge --squash --match-head-commit <checked-sha>`.
+
+Missing, skipped, pending, or failed expected checks do not pass. Report the blocker and leave the PR unmerged.
+Include the CI run link and checked SHA in the merge completion response.
 
 ## Reporting
 
