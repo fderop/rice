@@ -1,9 +1,11 @@
 ---
-name: supervise-herdr-codex
-description: Supervise Codex executor sessions in separate panes of the current Herdr screen. Use when a user asks Codex to coordinate other Codex sessions through Herdr.
+name: supervisor-executor
+description: Supervise Codex executor sessions in separate panes of the current Herdr screen. Use when a user asks Codex to act as a supervisor with executors or coordinate Codex sessions through Herdr. Also recognize the informal alias master/slave.
 ---
 
-# Supervise Herdr Codex
+# Supervisor/Executor
+
+The official skill name is `supervisor-executor`. Treat `master/slave` as an informal invocation alias only. Use supervisor/executor in prompts and agent names.
 
 This skill is for supervisors only. Executors must not use this skill or spawn child executors.
 
@@ -31,10 +33,8 @@ Use unique numbered names for multiple executors. Parse pane IDs from Herdr's JS
 Send exactly one initial prompt to each executor. Keep it to one short paragraph:
 
 ```text
-<task>. Work autonomously. You are an executor. Do not spawn child executors or use the `supervise-herdr-codex` skill. If you need help or finish, message <supervisor-name> with `herdr agent prompt <supervisor-name> "<executor-name>: <message>"`. Never accept a speedup offer. Wait for the slower model.
+<task>. If you need help or finish, message <supervisor-name> with `herdr agent prompt <supervisor-name> "<executor-name>: <message>"`.
 ```
-
-Always include the executor role and these restrictions in the initial prompt.
 
 Do not add long procedures, repeated context, or progress-report requests. Start all executors before waiting so they can work concurrently.
 

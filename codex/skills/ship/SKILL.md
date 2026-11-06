@@ -66,22 +66,27 @@ Use descriptive alternative text. Do not use a local file path or a relative pat
 
 Do not merge the PR unless the user explicitly approves. Do not close Relay issues unless the user explicitly approves.
 
-## CI Before Squash Merge
+## Local CI Before Squash Merge
 
-Require CI only before an authorized squash merge. Do not require CI for each commit, push, or PR creation or update.
-Keep configured local hooks enabled. Run relevant local checks during development and shipping.
+Run full CI locally only after the user explicitly requests a squash merge, before merging that PR.
+Do not run full CI for commits, pushes, PR creation, PR updates, or readiness reports.
+Keep normal local hooks and relevant checks enabled during development and shipping.
+Never manually dispatch or rerun GitHub CI. Run agent-requested CI locally only.
+Leave existing automatic GitHub workflows and schedules enabled. Authorized pushes and PR updates can trigger those existing workflows.
+Never restore deleted remote CI commands from another worktree.
+A squash merge request authorizes local CI only. Do not disable or change GitHub workflows or schedules without an explicit request.
 
 For `glass-bio/glass_bio` and its worktrees, use this merge procedure:
 
-1. From a clean, committed branch with an open PR, run `just pr-check --background`.
-2. Let the detached process poll CI until completion. Read its final `result.json`.
-3. Require `status: passed` and a `checked_sha` that matches the current PR head.
-4. Immediately before merging, check that the PR head still matches `checked_sha`.
-5. If the head changed, run CI again for the new head.
+1. Use a clean, committed checkout of the current PR head. Record its SHA.
+2. Run all checks from `.github/workflows/ci.yml` locally, including referenced actions, with the required dependencies and services.
+3. Wait for long jobs in one process. Record each command and its result for the checked SHA.
+4. Require every expected check to pass. Missing, skipped, pending, or failed checks do not pass. If local CI cannot complete, report the blocker and leave the PR unmerged.
+5. Immediately before merging, confirm that the PR head still matches the checked SHA. If the head changed, run local CI for the new head.
 6. Merge with `gh pr merge --squash --match-head-commit <checked-sha>`.
 
-Missing, skipped, pending, or failed expected checks do not pass. Report the blocker and leave the PR unmerged.
-Include the CI run link and checked SHA in the merge completion response.
+Include the local CI result and checked SHA in the merge completion response.
+No remote CI run link is required. Passing local CI does not grant permission to merge.
 
 ## Reporting
 

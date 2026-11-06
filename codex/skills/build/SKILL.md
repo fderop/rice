@@ -23,7 +23,8 @@ Drive the task from idea to PR without stopping between phases unless a real dec
    - Surface judgment calls to the user instead of silently expanding scope.
 4. Run relevant checks.
    - Use repo instructions and configured tooling.
-   - Require CI only before an authorized squash merge, as described in the `ship` skill.
+   - Never manually dispatch or rerun GitHub CI. Run agent-requested CI locally. Leave automatic workflows and schedules enabled.
+   - Run full CI locally only after an explicit squash merge request, as described in the `ship` skill.
    - Do not add tests by default unless local instructions or an actual surfaced bug justify them.
 5. Use the `ship` workflow to push and open or update a ready-for-review PR.
 
