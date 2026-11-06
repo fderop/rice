@@ -1,12 +1,23 @@
 # Run
 
+Use this command on Linux or macOS to install or update the shared setup, including Codex skills:
+
 ```
 curl -fsSL https://raw.githubusercontent.com/fderop/rice/main/setup.sh | bash && exec zsh
 ```
 
+If you already have a clone, run this command from its `main` branch:
+
+```bash
+cd ~/rice && git pull --ff-only && ./setup.sh && exec zsh
+```
+
+Replace `~/rice` with your clone's path. The setup updates shared shell settings, tools, Claude preferences, and Codex configuration and skills.
+It replaces the Rice-managed Codex configuration, rules, global instructions, and custom skills with the repository snapshot.
+
 ## macOS extras
 
-`setup.sh` targets fresh Linux. macOS-only bits live in their own scripts.
+`setup.sh` supports Linux and macOS. It uses Homebrew on macOS. The optional iTerm2 layout has a separate installer.
 
 ### iTerm2 Asgard layout (`scripts/setup-iterm-asgard.sh`)
 
@@ -25,6 +36,8 @@ The script deploys two wrappers (`~/.iterm-asgard-{claude,fdrviewer}.sh`), two i
 Assumed but not verified: `Host asgard` in `~/.ssh/config`, aws-vault profiles `claude-viewer-fdr` and `fdr-viewer` on asgard, `claude` on PATH on asgard, worktrees `/home/fdr/repositories/glass_bio{,_2,_3,_4}`.
 
 ## Codex skill updates on Linux and macOS
+
+The main setup command already installs these skills. Use the commands in this section for optional skills-only updates.
 
 Rice stores a shared snapshot of custom Codex skills. Changes reach another machine after publication to `main` and a local update.
 
